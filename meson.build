@@ -39,6 +39,13 @@ gthread_dep = dependency('gthread-2.0', version: glib_version_str)
 
 trg_deps = [gtk_dep, glib_dep, gio_dep, json_dep, libsoup_dep, gthread_dep]
 
+# blueprint compiler (required, but not packaged in a lot of places
+blp_compiler = find_program('blueprint-compiler', required: false)
+if not blp_compiler.found()
+  subproject('blueprint-compiler')
+  blp_compiler = find_program('blueprint-compiler', required: true)
+endif
+
 # compiler
 cc = meson.get_compiler('c')
 
