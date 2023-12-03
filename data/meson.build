@@ -34,10 +34,18 @@ if rst2man.found()
       install_dir: get_option('mandir') / 'man1')
 endif
 
+# blueprints
+blp_files = files('ui/about-dialog.blp')
+blueprints = custom_target('blueprints',
+  input: blp_files,
+  output: '.',
+  command: [blp_compiler, 'batch-compile', '@OUTDIR@', '@CURRENT_SOURCE_DIR@', '@INPUT@'])
+
 # gresources.xml
 gnome = import('gnome')
 gresource_xml ='@0@.gresource.xml'.format(app_id)
-gresources = gnome.compile_resources('trg-resources', gresource_xml)
+gresources = gnome.compile_resources('trg-resources', gresource_xml,
+  dependencies: blueprints)
 
 # desktop file
 po_dir = meson.project_source_root() / 'po'
