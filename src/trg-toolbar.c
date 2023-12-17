@@ -23,7 +23,6 @@
 #include <gtk/gtk.h>
 
 #include "trg-main-window.h"
-#include "trg-menu-bar.h"
 #include "trg-prefs.h"
 #include "trg-toolbar.h"
 
@@ -139,17 +138,6 @@ static GtkWidget *trg_toolbar_item_new(TrgToolbar *toolbar, gchar *text, int *in
     return GTK_WIDGET(w);
 }
 
-static void trg_toolbar_refresh_menu(GtkWidget *w, gpointer data)
-{
-    TrgToolbar *tb = TRG_TOOLBAR(data);
-    GtkWidget *old = gtk_menu_tool_button_get_menu(GTK_MENU_TOOL_BUTTON(tb->tb_connect));
-    GtkWidget *new = trg_menu_bar_file_connect_menu_new(tb->main_window, tb->prefs);
-
-    gtk_widget_destroy(old);
-    gtk_menu_tool_button_set_menu(GTK_MENU_TOOL_BUTTON(tb->tb_connect), new);
-    gtk_widget_show_all(new);
-}
-
 static GObject *trg_toolbar_constructor(GType type, guint n_construct_properties,
                                         GObjectConstructParam *construct_params)
 {
@@ -157,7 +145,6 @@ static GObject *trg_toolbar_constructor(GType type, guint n_construct_properties
                        ->constructor(type, n_construct_properties, construct_params);
     TrgToolbar *self = TRG_TOOLBAR(obj);
     GtkToolItem *separator;
-    GtkWidget *menu;
     int position = 0;
 
     gtk_toolbar_set_icon_size(GTK_TOOLBAR(obj), GTK_ICON_SIZE_LARGE_TOOLBAR);
@@ -167,10 +154,7 @@ static GObject *trg_toolbar_constructor(GType type, guint n_construct_properties
     self->tb_connect = GTK_WIDGET(gtk_menu_tool_button_new(img, _("Connect")));
     gtk_tool_item_set_tooltip_text(GTK_TOOL_ITEM(self->tb_connect), _("Connect"));
     gtk_tool_item_set_is_important(GTK_TOOL_ITEM(self->tb_connect), TRUE);
-    menu = trg_menu_bar_file_connect_menu_new(self->main_window, self->prefs);
-    gtk_menu_tool_button_set_menu(GTK_MENU_TOOL_BUTTON(self->tb_connect), menu);
     gtk_toolbar_insert(GTK_TOOLBAR(obj), GTK_TOOL_ITEM(self->tb_connect), position++);
-    gtk_widget_show_all(menu);
 
     self->tb_disconnect = trg_toolbar_item_new(TRG_TOOLBAR(obj), _("Disconnect"), &position,
                                                "trg-gtk-disconnect", FALSE);

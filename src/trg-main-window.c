@@ -28,10 +28,10 @@
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <json-glib/json-glib.h>
+#include <libsoup/soup.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <libsoup/soup.h>
 
 #include "json.h"
 #include "protocol-constants.h"
@@ -45,7 +45,6 @@
 #include "trg-files-model.h"
 #include "trg-files-tree-view.h"
 #include "trg-main-window.h"
-#include "trg-menu-bar.h"
 #include "trg-peers-model.h"
 #include "trg-peers-tree-view.h"
 #include "trg-preferences-dialog.h"
@@ -125,7 +124,6 @@ static void trg_main_window_get_property(GObject *object, guint property_id, GVa
 static void trg_main_window_set_property(GObject *object, guint property_id, const GValue *value,
                                          GParamSpec *pspec);
 static void quit_cb(GtkWidget *w, gpointer data);
-static TrgMenuBar *trg_main_window_menu_bar_new(TrgMainWindow *win);
 static void clear_filter_entry_cb(GtkEntry *entry, GtkEntryIconPosition icon_pos, GdkEvent *event,
                                   gpointer user_data);
 static GtkWidget *trg_imagemenuitem_box(const gchar *text, char *icon_name);
@@ -148,7 +146,6 @@ struct _TrgMainWindow {
 
     TrgClient *client;
     TrgToolbar *toolBar;
-    TrgMenuBar *menuBar;
 
     TrgStatusBar *statusBar;
     GtkWidget *iconStatusItem, *iconDownloadingItem, *iconSeedingItem, *iconSepItem;
@@ -219,7 +216,6 @@ static void update_selected_torrent_notebook(TrgMainWindow *win, gint mode, gint
 
     if (id >= 0 && get_torrent_data(trg_client_get_torrent_table(client), id, &t, &iter)) {
         trg_toolbar_torrent_actions_sensitive(win->toolBar, TRUE);
-        trg_menu_bar_torrent_actions_sensitive(win->menuBar, TRUE);
         trg_general_panel_update(win->genDetails, t, &iter);
         trg_trackers_model_update(win->trackersModel, serial, t, mode);
         trg_files_model_update(win->filesModel, GTK_TREE_VIEW(win->filesTreeView), serial, t, mode);
@@ -1200,7 +1196,6 @@ static void trg_main_window_torrent_scrub(TrgMainWindow *win)
     trg_trackers_model_set_no_selection(TRG_TRACKERS_MODEL(win->trackersModel));
 
     trg_toolbar_torrent_actions_sensitive(win->toolBar, FALSE);
-    trg_menu_bar_torrent_actions_sensitive(win->menuBar, FALSE);
 }
 
 static void entry_filter_changed_cb(GtkWidget *w, TrgMainWindow *win)
@@ -1223,7 +1218,6 @@ static void trg_main_window_conn_changed(TrgMainWindow *win, gboolean connected)
     TrgClient *tc = win->client;
 
     trg_toolbar_connected_change(win->toolBar, connected);
-    trg_menu_bar_connected_change(win->menuBar, connected);
 
     gtk_widget_set_sensitive(GTK_WIDGET(win->torrentTreeView), connected);
     gtk_widget_set_sensitive(GTK_WIDGET(win->peersTreeView), connected);
@@ -1281,73 +1275,6 @@ static void trg_main_window_set_property(GObject *object, guint property_id, con
 static void quit_cb(GtkWidget *w G_GNUC_UNUSED, gpointer data)
 {
     gtk_widget_destroy(GTK_WIDGET(data));
-}
-
-static TrgMenuBar *trg_main_window_menu_bar_new(TrgMainWindow *win)
-{
-
-    GObject *b_disconnect, *b_add, *b_resume, *b_pause, *b_verify, *b_remove, *b_delete, *b_props,
-        *b_local_prefs, *b_remote_prefs, *b_about, *b_view_states, *b_view_notebook, *b_view_stats,
-        *b_add_url, *b_quit, *b_move, *b_reannounce, *b_pause_all, *b_resume_all, *b_dir_filters,
-        *b_tracker_filters, *b_directories_first, *b_up_queue, *b_down_queue, *b_top_queue,
-        *b_bottom_queue, *b_start_now, *b_copy_magnetlink;
-
-    TrgMenuBar *menuBar;
-    GtkAccelGroup *accel_group;
-
-    accel_group = gtk_accel_group_new();
-
-    menuBar = trg_menu_bar_new(win, trg_client_get_prefs(win->client), win->torrentTreeView,
-                               accel_group);
-
-    g_object_get(
-        menuBar, "disconnect-button", &b_disconnect, "add-button", &b_add, "add-url-button",
-        &b_add_url, "resume-button", &b_resume, "resume-all-button", &b_resume_all, "pause-button",
-        &b_pause, "pause-all-button", &b_pause_all, "delete-button", &b_delete, "remove-button",
-        &b_remove, "move-button", &b_move, "verify-button", &b_verify, "reannounce-button",
-        &b_reannounce, "props-button", &b_props, "remote-prefs-button", &b_remote_prefs,
-        "local-prefs-button", &b_local_prefs, "view-notebook-button", &b_view_notebook,
-        "view-states-button", &b_view_states, "view-stats-button", &b_view_stats, "about-button",
-        &b_about, "quit-button", &b_quit, "dir-filters", &b_dir_filters, "tracker-filters",
-        &b_tracker_filters, TRG_PREFS_KEY_DIRECTORIES_FIRST, &b_directories_first, "up-queue",
-        &b_up_queue, "down-queue", &b_down_queue, "top-queue", &b_top_queue, "bottom-queue",
-        &b_bottom_queue, "start-now", &b_start_now, "copymagnet-button", &b_copy_magnetlink, NULL);
-
-    g_signal_connect(b_disconnect, "activate", G_CALLBACK(disconnect_cb), win);
-    g_signal_connect(b_add, "activate", G_CALLBACK(add_cb), win);
-    g_signal_connect(b_add_url, "activate", G_CALLBACK(add_url_cb), win);
-    g_signal_connect(b_resume, "activate", G_CALLBACK(resume_cb), win);
-    g_signal_connect(b_resume_all, "activate", G_CALLBACK(resume_all_cb), win);
-    g_signal_connect(b_pause, "activate", G_CALLBACK(pause_cb), win);
-    g_signal_connect(b_pause_all, "activate", G_CALLBACK(pause_all_cb), win);
-    g_signal_connect(b_verify, "activate", G_CALLBACK(verify_cb), win);
-    g_signal_connect(b_reannounce, "activate", G_CALLBACK(reannounce_cb), win);
-    g_signal_connect(b_delete, "activate", G_CALLBACK(delete_cb), win);
-    g_signal_connect(b_remove, "activate", G_CALLBACK(remove_cb), win);
-    g_signal_connect(b_up_queue, "activate", G_CALLBACK(up_queue_cb), win);
-    g_signal_connect(b_down_queue, "activate", G_CALLBACK(down_queue_cb), win);
-    g_signal_connect(b_top_queue, "activate", G_CALLBACK(top_queue_cb), win);
-    g_signal_connect(b_bottom_queue, "activate", G_CALLBACK(bottom_queue_cb), win);
-    g_signal_connect(b_start_now, "activate", G_CALLBACK(start_now_cb), win);
-    g_signal_connect(b_move, "activate", G_CALLBACK(move_cb), win);
-    g_signal_connect(b_about, "activate", G_CALLBACK(open_about_cb), win);
-    g_signal_connect(b_local_prefs, "activate", G_CALLBACK(open_local_prefs_cb), win);
-    g_signal_connect(b_remote_prefs, "activate", G_CALLBACK(open_remote_prefs_cb), win);
-    g_signal_connect(b_view_notebook, "toggled", G_CALLBACK(view_notebook_toggled_cb), win);
-    g_signal_connect(b_dir_filters, "toggled", G_CALLBACK(main_window_toggle_filter_dirs), win);
-    g_signal_connect(b_tracker_filters, "toggled", G_CALLBACK(main_window_toggle_filter_trackers),
-                     win);
-    g_signal_connect(b_directories_first, "toggled",
-                     G_CALLBACK(main_window_toggle_directories_first), win);
-    g_signal_connect(b_view_states, "toggled", G_CALLBACK(view_states_toggled_cb), win);
-    g_signal_connect(b_view_stats, "activate", G_CALLBACK(view_stats_toggled_cb), win);
-    g_signal_connect(b_props, "activate", G_CALLBACK(open_props_cb), win);
-    g_signal_connect(b_copy_magnetlink, "activate", G_CALLBACK(copy_magnetlink_cb), win);
-    g_signal_connect(b_quit, "activate", G_CALLBACK(quit_cb), win);
-
-    gtk_window_add_accel_group(GTK_WINDOW(win), accel_group);
-
-    return menuBar;
 }
 
 static void clear_filter_entry_cb(GtkEntry *entry, GtkEntryIconPosition icon_pos, GdkEvent *event,
@@ -1673,7 +1600,6 @@ static void trg_client_session_updated_cb(TrgClient *tc, JsonObject *session, Tr
     }
 
     if (win->queuesEnabled != queuesEnabled) {
-        trg_menu_bar_set_supports_queues(win->menuBar, queuesEnabled);
         trg_state_selector_set_queues_enabled(win->stateSelector, queuesEnabled);
     }
 
@@ -1775,9 +1701,6 @@ static GObject *trg_main_window_constructor(GType type, guint n_construct_proper
     outerVbox = trg_vbox_new(FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(self), outerVbox);
-
-    self->menuBar = trg_main_window_menu_bar_new(self);
-    gtk_box_pack_start(GTK_BOX(outerVbox), GTK_WIDGET(self->menuBar), FALSE, FALSE, 0);
 
     toolbarHbox = trg_hbox_new(FALSE, 0);
     self->toolBar = trg_main_window_toolbar_new(self);
