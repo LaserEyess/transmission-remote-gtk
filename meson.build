@@ -94,7 +94,9 @@ flags = [
   '-Werror=pointer-arith',
   '-Werror=init-self',
   '-Werror=missing-include-dirs',
-  '-Werror=date-time'
+  '-Werror=date-time',
+  '-Wno-deprecated',
+  '-Wno-deprecated-declarations'
 ]
 
 cflags = cc.get_supported_arguments(flags)
