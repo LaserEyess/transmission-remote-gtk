@@ -39,12 +39,6 @@ gthread_dep = dependency('gthread-2.0', version: glib_version_str)
 
 trg_deps = [gtk_dep, glib_dep, gio_dep, json_dep, libsoup_dep, gthread_dep]
 
-# optional dependencies
-libappindicator_dep = dependency('ayatana-appindicator3-0.1',
-  'appindicator3-0.1', required: get_option('libappindicator'))
-
-trg_deps += [libappindicator_dep]
-
 # compiler
 cc = meson.get_compiler('c')
 
@@ -58,7 +52,6 @@ if nl_li_feature.enabled() and not nl_langinfo
   error('nl_langinfo() specified but not found')
 endif
 nl_langinfo = nl_langinfo and nl_li_feature.allowed()
-
 
 # config data
 conf_data = configuration_data()
@@ -80,10 +73,6 @@ conf_data.set('G_DISABLE_CAST_CHECKS', not debug)
 
 # compile time features
 conf_data.set10('ENABLE_NL_LANGINFO', nl_langinfo)
-
-conf_data.set10('HAVE_LIBAPPINDICATOR', libappindicator_dep.found())
-conf_data.set10('HAVE_LIBAYATANA_APPINDICATOR',
-  libappindicator_dep.found() and libappindicator_dep.name() == 'ayatana-appindicator3-0.1')
 
 # compiler/linker flags
 flags = [

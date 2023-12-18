@@ -286,14 +286,6 @@ static void toggle_directories_first(GtkToggleButton *w, gpointer win)
     trg_state_selector_set_directories_first(selector, gtk_toggle_button_get_active(w));
 }
 
-static void toggle_tray_icon(GtkToggleButton *w, gpointer win)
-{
-    if (gtk_toggle_button_get_active(w))
-        trg_main_window_add_tray(TRG_MAIN_WINDOW(win));
-    else
-        trg_main_window_remove_tray(TRG_MAIN_WINDOW(win));
-}
-
 static void menu_bar_toggle_filter_dirs(GtkToggleButton *w, gpointer win)
 {
     TrgStateSelector *selector = trg_main_window_get_state_selector(TRG_MAIN_WINDOW(win));
@@ -514,7 +506,7 @@ static GtkWidget *trg_prefs_dirsPage(TrgPreferencesDialog *dlg)
 
 static GtkWidget *trg_prefs_viewPage(TrgPreferencesDialog *dlg)
 {
-    GtkWidget *w, *dep, *t, *tray;
+    GtkWidget *w, *dep, *t;
     guint row = 0;
 
     t = hig_workarea_create();
@@ -545,19 +537,6 @@ static GtkWidget *trg_prefs_viewPage(TrgPreferencesDialog *dlg)
                        NULL);
     g_signal_connect(G_OBJECT(w), "toggled", G_CALLBACK(notebook_toggled_cb), dlg->win);
     hig_workarea_add_wide_control(t, &row, w);
-
-    hig_workarea_add_section_title(t, &row, _("System Tray"));
-
-    tray = trgp_check_new(dlg, _("Show in system tray"), TRG_PREFS_KEY_SYSTEM_TRAY,
-                          TRG_PREFS_GLOBAL, NULL);
-    g_signal_connect(G_OBJECT(tray), "toggled", G_CALLBACK(toggle_tray_icon), dlg->win);
-
-    if (!HAVE_LIBAPPINDICATOR) {
-        gtk_widget_set_sensitive(tray, FALSE);
-        gtk_widget_set_tooltip_text(tray, _("System tray not supported."));
-    }
-
-    hig_workarea_add_wide_control(t, &row, tray);
 
     hig_workarea_add_section_title(t, &row, _("Notifications"));
 
