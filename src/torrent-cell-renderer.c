@@ -20,7 +20,6 @@
 #include <gtk/gtk.h>
 
 #include "hig.h"
-#include "icons.h"
 #include "torrent-cell-renderer.h"
 #include "torrent.h"
 #include "trg-client.h"
@@ -57,8 +56,8 @@ enum {
 
 #define DEFAULT_BAR_HEIGHT 12
 #define SMALL_SCALE        0.9
-#define COMPACT_ICON_SIZE  GTK_ICON_SIZE_MENU
-#define FULL_ICON_SIZE     GTK_ICON_SIZE_DND
+#define COMPACT_ICON_SIZE  GTK_ICON_SIZE_NORMAL
+#define FULL_ICON_SIZE     GTK_ICON_SIZE_LARGE
 
 #define FOREGROUND_COLOR_KEY "foreground-rgba"
 typedef GdkRGBA GtrColor;
@@ -318,29 +317,6 @@ static void getStatusString(GString *gstr, TorrentCellRenderer *r)
         if (*buf)
             g_string_append_printf(gstr, " - %s", buf);
     }
-}
-
-/***
-****
-***/
-
-static GdkPixbuf *get_icon(TorrentCellRenderer *r, GtkIconSize icon_size, GtkWidget *for_widget)
-{
-    const char *mime_type;
-
-    if (r->fileCount == 0)
-        mime_type = UNKNOWN_MIME_TYPE;
-    else if (r->fileCount > 1)
-        mime_type = DIRECTORY_MIME_TYPE;
-    /*else if( strchr( info->files[0].name, '/' ) != NULL )
-       mime_type = DIRECTORY_MIME_TYPE;
-       else
-       mime_type = gtr_get_mime_type_from_filename( info->files[0].name ); */
-    else
-        mime_type = FILE_MIME_TYPE;
-
-    // return NULL;
-    return gtr_get_mime_type_icon(mime_type, icon_size, for_widget);
 }
 
 /***
