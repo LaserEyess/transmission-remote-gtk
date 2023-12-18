@@ -23,24 +23,15 @@
 #include <gtk/gtk.h>
 
 #include "trg-about-window.h"
-
+/* TODO: remove this whole file, there's a convenience function for it*/
 GtkWidget *trg_about_window_new(GtkWindow *parent)
 {
     GtkWidget *dialog;
-    GdkPixbuf *logo;
     const gchar *trgAuthors[] = { "Alan Fitton <alan@eth0.org.uk>", NULL };
 
     dialog = gtk_about_dialog_new();
     gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
     gtk_window_set_destroy_with_parent(GTK_WINDOW(dialog), TRUE);
-
-    logo = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), PACKAGE_NAME, 48,
-                                    GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
-
-    if (logo != NULL) {
-        gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(dialog), logo);
-        g_object_unref(logo);
-    }
 
     gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
 
