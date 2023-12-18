@@ -15,11 +15,19 @@
 #include "hig.h"
 #include <gtk/gtk.h>
 
+static void set_borders(GtkWidget *w, int spacing)
+{
+    gtk_widget_set_margin_bottom(w, spacing);
+    gtk_widget_set_margin_top(w, spacing);
+    gtk_widget_set_margin_start(w, spacing);
+    gtk_widget_set_margin_end(w, spacing);
+}
+
 GtkWidget *hig_workarea_create(void)
 {
     GtkWidget *grid = gtk_grid_new();
 
-    gtk_container_set_border_width(GTK_CONTAINER(grid), GUI_PAD_BIG);
+    set_borders(grid, GUI_PAD_BIG);
     gtk_grid_set_row_spacing(GTK_GRID(grid), GUI_PAD);
     gtk_grid_set_column_spacing(GTK_GRID(grid), GUI_PAD_BIG);
 
@@ -127,8 +135,8 @@ GtkWidget *hig_workarea_add_tall_row(GtkWidget *table, guint *row, const char *m
     GtkWidget *l = gtk_label_new_with_mnemonic(mnemonic_string);
     GtkWidget *h = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     GtkWidget *v = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_box_pack_start(GTK_BOX(h), l, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(v), h, FALSE, FALSE, GUI_PAD_SMALL);
+    gtk_box_append(GTK_BOX(h), l);
+    gtk_box_append(GTK_BOX(v), h);
 
     hig_workarea_add_label_w(table, *row, v);
     hig_workarea_add_tall_control(table, *row, control);
