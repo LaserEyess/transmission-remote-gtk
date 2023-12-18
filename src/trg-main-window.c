@@ -507,12 +507,13 @@ static void main_window_toggle_directories_first(GtkCheckMenuItem *w, gpointer d
 
 static TrgToolbar *trg_main_window_toolbar_new(TrgMainWindow *win)
 {
+    /* TODO: This whole function should use actions rather than signal callbacks */
     TrgPrefs *prefs = trg_client_get_prefs(win->client);
 
     GObject *b_connect, *b_disconnect, *b_add, *b_resume, *b_pause;
     GObject *b_remove, *b_delete, *b_props, *b_local_prefs, *b_remote_prefs;
 
-    TrgToolbar *toolBar = trg_toolbar_new(win, prefs);
+    TrgToolbar *toolBar = trg_toolbar_new();
 
     g_object_get(toolBar, "connect-button", &b_connect, "disconnect-button", &b_disconnect,
                  "add-button", &b_add, "resume-button", &b_resume, "pause-button", &b_pause,
