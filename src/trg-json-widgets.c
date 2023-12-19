@@ -98,7 +98,8 @@ GtkWidget *trg_json_widget_entry_new(GList **wl, JsonObject *obj, const gchar *k
                          w);
     }
 
-    gtk_entry_set_text(GTK_ENTRY(w), json_object_get_string_member(obj, key));
+    GtkEntryBuffer *buf = gtk_entry_get_buffer(GTK_ENTRY(w));
+    gtk_entry_buffer_set_text(buf, json_object_get_string_member(obj, key), -1);
 
     *wl = g_list_append(*wl, wd);
 
@@ -164,7 +165,8 @@ void trg_json_widget_check_save(GtkWidget *widget, JsonObject *obj, gchar *key)
 
 void trg_json_widget_entry_save(GtkWidget *widget, JsonObject *obj, gchar *key)
 {
-    json_object_set_string_member(obj, key, gtk_entry_get_text(GTK_ENTRY(widget)));
+    GtkEntryBuffer *buf = gtk_entry_get_buffer(GTK_ENTRY(widget));
+    json_object_set_string_member(obj, key, gtk_entry_buffer_get_text(buf));
 }
 
 void trg_json_widget_spin_int_save(GtkWidget *widget, JsonObject *obj, gchar *key)
