@@ -183,12 +183,6 @@ static gboolean search_func(GtkTreeModel *model, gint column, const gchar *key, 
 static void trg_files_tree_view_init(TrgFilesTreeView *self)
 {
     TrgTreeView *ttv = TRG_TREE_VIEW(self);
-    trg_column_description *desc;
-
-    desc = trg_tree_view_reg_column(ttv, TRG_COLTYPE_FILEICONTEXT, FILESCOL_NAME, _("Name"), "name",
-                                    0);
-    desc->model_column_extra = FILESCOL_ID;
-
     trg_tree_view_reg_column(ttv, TRG_COLTYPE_SIZE, FILESCOL_SIZE, _("Size"), "size", 0);
     trg_tree_view_reg_column(ttv, TRG_COLTYPE_PROG, FILESCOL_PROGRESS, _("Progress"), "progress",
                              0);

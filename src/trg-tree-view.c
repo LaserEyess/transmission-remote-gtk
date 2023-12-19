@@ -26,7 +26,6 @@
 
 #include "trg-cell-renderer-epoch.h"
 #include "trg-cell-renderer-eta.h"
-#include "trg-cell-renderer-file-icon.h"
 #include "trg-cell-renderer-numgteqthan.h"
 #include "trg-cell-renderer-priority.h"
 #include "trg-cell-renderer-ratio.h"
@@ -375,23 +374,6 @@ static GtkTreeViewColumn *trg_tree_view_icontext_column_new(trg_column_descripti
     return column;
 }
 
-static GtkTreeViewColumn *trg_tree_view_fileicontext_column_new(trg_column_description *desc)
-{
-    GtkTreeViewColumn *column = gtk_tree_view_column_new();
-    GtkCellRenderer *renderer = trg_cell_renderer_file_icon_new();
-
-    gtk_tree_view_column_set_title(column, desc->header);
-    gtk_tree_view_column_pack_start(column, renderer, FALSE);
-    gtk_tree_view_column_set_attributes(column, renderer, "file-id", desc->model_column_extra,
-                                        "file-name", desc->model_column, NULL);
-
-    renderer = gtk_cell_renderer_text_new();
-    gtk_tree_view_column_pack_start(column, renderer, TRUE);
-    gtk_tree_view_column_set_attributes(column, renderer, "text", desc->model_column, NULL);
-
-    return column;
-}
-
 static void trg_tree_view_add_column_after(TrgTreeView *tv, trg_column_description *desc,
                                            gint64 width, GtkTreeViewColumn *after_col)
 {
@@ -448,9 +430,6 @@ static void trg_tree_view_add_column_after(TrgTreeView *tv, trg_column_descripti
         break;
     case TRG_COLTYPE_ICONTEXT:
         column = trg_tree_view_icontext_column_new(desc, "icon-name");
-        break;
-    case TRG_COLTYPE_FILEICONTEXT:
-        column = trg_tree_view_fileicontext_column_new(desc);
         break;
     case TRG_COLTYPE_PRIO:
         renderer = trg_cell_renderer_priority_new();
