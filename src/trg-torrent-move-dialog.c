@@ -67,7 +67,8 @@ static void trg_torrent_move_response_cb(GtkDialog *dialog, gint res_id, gpointe
     } else {
         json_array_unref(dlg->ids);
     }
-    gtk_widget_destroy(GTK_WIDGET(dlg));
+
+    g_object_unref(dlg);
 }
 
 static void location_changed(GtkComboBox *w, gpointer data)
@@ -109,13 +110,9 @@ static GObject *trg_torrent_move_dialog_constructor(GType type, guint n_construc
         self->move_button,
         trg_destination_combo_has_text(TRG_DESTINATION_COMBO(self->location_combo)));
 
-    gtk_container_set_border_width(GTK_CONTAINER(object), GUI_PAD);
-
     gtk_dialog_set_default_response(GTK_DIALOG(object), GTK_RESPONSE_ACCEPT);
 
-    gtk_container_set_border_width(GTK_CONTAINER(t), GUI_PAD);
-
-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(object))), t, TRUE, TRUE, 0);
+    gtk_box_append(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(object))), t);
 
     count = gtk_tree_selection_count_selected_rows(
         gtk_tree_view_get_selection(GTK_TREE_VIEW(self->treeview)));

@@ -289,11 +289,10 @@ GtkWidget *gtr_combo_box_new_enum(const char *text_1, ...)
 
 GtkWidget *my_scrolledwin_new(GtkWidget *child)
 {
-    GtkWidget *scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+    GtkWidget *scrolled_win = gtk_scrolled_window_new();
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC,
                                    GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_win), GTK_SHADOW_ETCHED_IN);
-    gtk_container_add(GTK_CONTAINER(scrolled_win), child);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled_win), child);
     return scrolled_win;
 }
 
@@ -319,8 +318,8 @@ void trg_error_dialog(GtkWindow *parent, gchar *msg)
     GtkWidget *dialog = gtk_message_dialog_new(parent, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR,
                                                GTK_BUTTONS_OK, "%s", msg);
     gtk_window_set_title(GTK_WINDOW(dialog), _("Error"));
-    gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(dialog);
+    g_signal_connect(dialog, "response", G_CALLBACK(gtk_window_destroy), dialog);
+    gtk_window_present(GTK_WINDOW(dialog));
 }
 
 gchar *make_error_message(JsonObject *response, gint status, gchar *err_msg)
