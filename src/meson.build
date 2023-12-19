@@ -11,7 +11,6 @@ src_files = files(
   'trg-cell-renderer-counter.c',
   'trg-cell-renderer-epoch.c',
   'trg-cell-renderer-eta.c',
-  'trg-cell-renderer-file-icon.c',
   'trg-cell-renderer-numgteqthan.c',
   'trg-cell-renderer-priority.c',
   'trg-cell-renderer-ratio.c',

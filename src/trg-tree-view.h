@@ -36,7 +36,6 @@ GList *trg_tree_view_get_selected_refs_list(GtkTreeView *tv);
 
 typedef enum {
     TRG_COLTYPE_ICONTEXT,
-    TRG_COLTYPE_FILEICONTEXT,
     TRG_COLTYPE_WANTED,
     TRG_COLTYPE_TEXT,
     TRG_COLTYPE_SIZE,

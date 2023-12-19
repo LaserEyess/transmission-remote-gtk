@@ -34,7 +34,6 @@
 #include "protocol-constants.h"
 #include "requests.h"
 #include "torrent.h"
-#include "trg-cell-renderer-file-icon.h"
 #include "trg-cell-renderer-priority.h"
 #include "trg-cell-renderer-size.h"
 #include "trg-cell-renderer-wanted.h"
