@@ -129,16 +129,16 @@ void trg_destination_combo_save_selection(TrgDestinationCombo *combo_box)
     }
 }
 
-static inline GtkEntry *trg_destination_combo_get_entry(TrgDestinationCombo *combo)
+static inline const char *trg_destination_combo_get_entry_text(TrgDestinationCombo *combo)
 {
-    return GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
+    GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(combo)));
+    GtkEntryBuffer *buf = gtk_entry_get_buffer(entry);
+    return gtk_entry_buffer_get_text(buf);
 }
 
 gboolean trg_destination_combo_has_text(TrgDestinationCombo *combo)
 {
-    const gchar *text
-        = gtk_entry_get_text(trg_destination_combo_get_entry(TRG_DESTINATION_COMBO(combo)));
-    return strlen(text) > 0;
+    return strlen(trg_destination_combo_get_entry_text(combo)) > 0;
 }
 
 struct findDupeArg {
@@ -199,7 +199,8 @@ gchar *trg_destination_combo_get_dir(TrgDestinationCombo *combo)
         }
     }
 
-    return g_strdup(gtk_entry_get_text(trg_destination_combo_get_entry(combo)));
+
+    return g_strdup(trg_destination_combo_get_entry_text(combo));
 }
 
 static void load_directory_model(TrgDestinationCombo *self)
