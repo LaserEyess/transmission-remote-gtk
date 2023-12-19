@@ -19,7 +19,6 @@
 
 #include "config.h"
 
-#include <gdk/gdkkeysyms-compat.h>
 #include <gdk/gdkkeysyms.h>
 #include <gio/gio.h>
 #include <glib.h>
