@@ -117,7 +117,7 @@ static void send_updated_file_prefs(TrgFilesTreeView *tv)
 static void rename_file(GtkWidget *w G_GNUC_UNUSED, gpointer data)
 {
     TrgFilesTreeView *tv = TRG_FILES_TREE_VIEW(data);
-    gtk_widget_show_all(GTK_WIDGET(trg_file_rename_dialog_new(tv->win, tv->client, tv)));
+    gtk_window_present(GTK_WINDOW(trg_file_rename_dialog_new(tv->win, tv->client, tv)));
 }
 
 static void set_low(GtkWidget *w G_GNUC_UNUSED, gpointer data)
