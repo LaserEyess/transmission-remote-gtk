@@ -187,47 +187,6 @@ static void refresh_statelist_cb(GtkWidget *w, gpointer data)
     trg_state_selector_update(data, TORRENT_UPDATE_ADDREMOVE);
 }
 
-static void view_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer data G_GNUC_UNUSED)
-{
-    GtkWidget *menu, *item, *box, *img, *label;
-
-    menu = gtk_menu_new();
-    gtk_menu_set_reserve_toggle_size(GTK_MENU(menu), FALSE);
-
-    item = gtk_menu_item_new();
-    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-    img = gtk_image_new_from_icon_name("view-refresh", GTK_ICON_SIZE_MENU);
-    label = gtk_label_new(_("Refresh"));
-
-    gtk_container_add(GTK_CONTAINER(box), img);
-    gtk_container_add(GTK_CONTAINER(box), label);
-
-    gtk_container_add(GTK_CONTAINER(item), box);
-
-    g_signal_connect(item, "activate", G_CALLBACK(refresh_statelist_cb), treeview);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    gtk_widget_show_all(menu);
-
-    gtk_menu_popup_at_pointer(GTK_MENU(menu), (GdkEvent *)event);
-}
-
-static gboolean view_onPopupMenu(GtkWidget *treeview, gpointer userdata)
-{
-    view_popup_menu(treeview, NULL, userdata);
-    return TRUE;
-}
-
-static gboolean view_onButtonPressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
-{
-    if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
-        view_popup_menu(treeview, event, userdata);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 struct state_find_pos {
     int offset;
     int range;
@@ -612,8 +571,6 @@ static GObject *trg_state_selector_constructor(GType type, guint n_construct_pro
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(object));
 
     g_signal_connect(G_OBJECT(selection), "changed", G_CALLBACK(state_selection_changed), object);
-    g_signal_connect(object, "button-press-event", G_CALLBACK(view_onButtonPressed), NULL);
-    g_signal_connect(object, "popup-menu", G_CALLBACK(view_onPopupMenu), NULL);
 
     gtk_tree_view_set_search_column(GTK_TREE_VIEW(object), STATE_SELECTOR_NAME);
 
