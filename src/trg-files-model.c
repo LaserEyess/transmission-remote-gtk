@@ -28,7 +28,6 @@
 #include "torrent.h"
 #include "trg-files-model-common.h"
 #include "trg-files-model.h"
-#include "trg-files-tree-view-common.h"
 #include "trg-files-tree.h"
 #include "util.h"
 
