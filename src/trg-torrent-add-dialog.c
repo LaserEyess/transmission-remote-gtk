@@ -41,7 +41,6 @@
 #include "trg-destination-combo.h"
 #include "trg-file-parser.h"
 #include "trg-files-model-common.h"
-#include "trg-files-tree-view-common.h"
 #include "trg-main-window.h"
 #include "trg-prefs.h"
 #include "trg-torrent-add-dialog.h"
@@ -213,12 +212,9 @@ static void set_wanted(GtkWidget *w G_GNUC_UNUSED, gpointer data)
     trg_files_model_set_wanted(GTK_TREE_VIEW(data), FC_ENABLED, TRUE);
 }
 
-static gboolean onViewButtonPressed(GtkWidget *w, GdkEventButton *event, gpointer gdata)
+static gboolean onViewButtonPressed(GtkWidget *w, GdkEvent *event, gpointer gdata)
 {
-    return trg_files_tree_view_onViewButtonPressed(
-        w, event, FC_PRIORITY, FC_ENABLED, NULL, /* no rename */
-        G_CALLBACK(set_low), G_CALLBACK(set_normal), G_CALLBACK(set_high), G_CALLBACK(set_wanted),
-        G_CALLBACK(set_unwanted), gdata);
+    return false;
 }
 
 static GtkWidget *gtr_file_list_new(GtkTreeStore **store)
