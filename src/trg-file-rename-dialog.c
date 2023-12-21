@@ -95,7 +95,7 @@ static void trg_file_rename_response_cb(GtkDialog *dlg, gint res_id, gpointer da
         g_free(self->orig_path);
         json_array_unref(self->ids);
     }
-    gtk_widget_destroy(GTK_WIDGET(dlg));
+    gtk_window_destroy(GTK_WINDOW(dlg));
 }
 
 static void location_changed(GtkComboBox *w, gpointer data)
@@ -161,13 +161,9 @@ static GObject *trg_file_rename_dialog_constructor(GType type, guint n_construct
     gtk_widget_set_sensitive(self->rename_button,
                              gtk_entry_buffer_get_length(self->name_entry_buf));
 
-    gtk_container_set_border_width(GTK_CONTAINER(object), GUI_PAD);
-
     gtk_dialog_set_default_response(GTK_DIALOG(object), GTK_RESPONSE_ACCEPT);
 
-    gtk_container_set_border_width(GTK_CONTAINER(t), GUI_PAD);
-
-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(object))), t, TRUE, TRUE, 0);
+    gtk_box_append(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(object))), t);
 
     target_id = trg_files_model_get_torrent_id(TRG_FILES_MODEL(model));
     self->ids = json_array_new();
