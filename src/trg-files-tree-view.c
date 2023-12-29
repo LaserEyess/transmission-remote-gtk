@@ -29,7 +29,6 @@
 #include "trg-file-rename-dialog.h"
 #include "trg-files-model-common.h"
 #include "trg-files-model.h"
-#include "trg-files-tree-view-common.h"
 #include "trg-files-tree-view.h"
 #include "trg-main-window.h"
 #include "trg-tree-view.h"
@@ -118,7 +117,7 @@ static void send_updated_file_prefs(TrgFilesTreeView *tv)
 static void rename_file(GtkWidget *w G_GNUC_UNUSED, gpointer data)
 {
     TrgFilesTreeView *tv = TRG_FILES_TREE_VIEW(data);
-    gtk_widget_show_all(GTK_WIDGET(trg_file_rename_dialog_new(tv->win, tv->client, tv)));
+    gtk_window_present(GTK_WINDOW(trg_file_rename_dialog_new(tv->win, tv->client, tv)));
 }
 
 static void set_low(GtkWidget *w G_GNUC_UNUSED, gpointer data)
@@ -151,12 +150,9 @@ static void set_wanted(GtkWidget *w G_GNUC_UNUSED, gpointer data)
     send_updated_file_prefs(TRG_FILES_TREE_VIEW(data));
 }
 
-static gboolean view_onButtonPressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
+static gboolean view_onButtonPressed(GtkWidget *treeview, GdkEvent *event, gpointer userdata)
 {
-    gboolean handled = trg_files_tree_view_onViewButtonPressed(
-        treeview, event, -1, FILESCOL_WANTED, G_CALLBACK(rename_file), G_CALLBACK(set_low),
-        G_CALLBACK(set_normal), G_CALLBACK(set_high), G_CALLBACK(set_wanted),
-        G_CALLBACK(set_unwanted), userdata);
+    gboolean handled = false;
 
     if (handled)
         send_updated_file_prefs(TRG_FILES_TREE_VIEW(treeview));
@@ -183,12 +179,6 @@ static gboolean search_func(GtkTreeModel *model, gint column, const gchar *key, 
 static void trg_files_tree_view_init(TrgFilesTreeView *self)
 {
     TrgTreeView *ttv = TRG_TREE_VIEW(self);
-    trg_column_description *desc;
-
-    desc = trg_tree_view_reg_column(ttv, TRG_COLTYPE_FILEICONTEXT, FILESCOL_NAME, _("Name"), "name",
-                                    0);
-    desc->model_column_extra = FILESCOL_ID;
-
     trg_tree_view_reg_column(ttv, TRG_COLTYPE_SIZE, FILESCOL_SIZE, _("Size"), "size", 0);
     trg_tree_view_reg_column(ttv, TRG_COLTYPE_PROG, FILESCOL_PROGRESS, _("Progress"), "progress",
                              0);
@@ -203,7 +193,6 @@ static void trg_files_tree_view_init(TrgFilesTreeView *self)
                                         gtk_tree_view_get_model(GTK_TREE_VIEW(self)), NULL);
 
     g_signal_connect(self, "button-press-event", G_CALLBACK(view_onButtonPressed), NULL);
-    g_signal_connect(self, "popup-menu", G_CALLBACK(trg_files_tree_view_viewOnPopupMenu), NULL);
 }
 
 TrgFilesTreeView *trg_files_tree_view_new(TrgFilesModel *model, TrgMainWindow *win,

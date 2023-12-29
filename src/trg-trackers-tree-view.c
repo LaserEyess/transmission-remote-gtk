@@ -27,7 +27,6 @@
 #include "requests.h"
 #include "trg-client.h"
 #include "trg-main-window.h"
-#include "trg-menu-bar.h"
 #include "trg-prefs.h"
 #include "trg-trackers-model.h"
 #include "trg-trackers-tree-view.h"
@@ -223,75 +222,6 @@ static void delete_tracker(GtkWidget *w, gpointer data)
     dispatch_rpc_async(self->client, req, on_trackers_update, data);
 }
 
-static void view_popup_menu_add_only(GtkWidget *treeview, GdkEventButton *event,
-                                     gpointer data G_GNUC_UNUSED)
-{
-    GtkWidget *menu, *menuitem;
-
-    menu = gtk_menu_new();
-
-    menuitem = trg_menu_bar_item_new(GTK_MENU_SHELL(menu), _("Add"), TRUE);
-    g_signal_connect(menuitem, "activate", G_CALLBACK(add_tracker), treeview);
-
-    gtk_widget_show_all(menu);
-
-    gtk_menu_popup_at_pointer(GTK_MENU(menu), (GdkEvent *)event);
-}
-
-static void view_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer data G_GNUC_UNUSED)
-{
-    GtkWidget *menu, *menuitem;
-
-    menu = gtk_menu_new();
-
-    menuitem = trg_menu_bar_item_new(GTK_MENU_SHELL(menu), _("Delete"), TRUE);
-    g_signal_connect(menuitem, "activate", G_CALLBACK(delete_tracker), treeview);
-
-    menuitem = trg_menu_bar_item_new(GTK_MENU_SHELL(menu), _("Add"), TRUE);
-    g_signal_connect(menuitem, "activate", G_CALLBACK(add_tracker), treeview);
-
-    gtk_widget_show_all(menu);
-
-    gtk_menu_popup_at_pointer(GTK_MENU(menu), (GdkEvent *)event);
-}
-
-static gboolean view_onButtonPressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
-{
-    TrgTrackersTreeView *self = TRG_TRACKERS_TREE_VIEW(treeview);
-    TrgTrackersModel *model = TRG_TRACKERS_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(treeview)));
-    GtkTreeSelection *selection;
-    GtkTreePath *path;
-
-    if (!is_tracker_edit_supported(self->client))
-        return FALSE;
-
-    if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
-        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
-
-        if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview), (gint)event->x, (gint)event->y,
-                                          &path, NULL, NULL, NULL)) {
-            if (!gtk_tree_selection_path_is_selected(selection, path)) {
-                gtk_tree_selection_unselect_all(selection);
-                gtk_tree_selection_select_path(selection, path);
-            }
-            gtk_tree_path_free(path);
-
-            view_popup_menu(treeview, event, userdata);
-        } else if (trg_trackers_model_get_torrent_id(model) >= 0) {
-            view_popup_menu_add_only(treeview, event, userdata);
-        }
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-static gboolean view_onPopupMenu(GtkWidget *treeview, gpointer userdata)
-{
-    view_popup_menu(treeview, NULL, userdata);
-    return TRUE;
-}
-
 TrgTrackersTreeView *trg_trackers_tree_view_new(TrgTrackersModel *model, TrgClient *client,
                                                 TrgMainWindow *win, const gchar *configId)
 {
@@ -305,9 +235,6 @@ TrgTrackersTreeView *trg_trackers_tree_view_new(TrgTrackersModel *model, TrgClie
     self->win = win;
 
     trg_tree_view_setup_columns(TRG_TREE_VIEW(obj));
-
-    g_signal_connect(obj, "button-press-event", G_CALLBACK(view_onButtonPressed), NULL);
-    g_signal_connect(obj, "popup-menu", G_CALLBACK(view_onPopupMenu), NULL);
 
     return TRG_TRACKERS_TREE_VIEW(obj);
 }

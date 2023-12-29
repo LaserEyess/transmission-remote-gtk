@@ -30,7 +30,7 @@ glib_min_def = '-DGLIB_VERSION_MIN_REQUIRED=@0@'.format(glib_min)
 add_project_arguments(glib_min_def, language: 'c')
 
 # required dependencies
-gtk_dep     = dependency('gtk+-3.0', version: '>= 3.22')
+gtk_dep     = dependency('gtk4', version: '>= 4.10')
 gio_dep     = dependency('gio-2.0', version: glib_version_str)
 glib_dep    = dependency('glib-2.0', version: glib_version_str)
 json_dep    = dependency('json-glib-1.0', version: '>= 1.2.8')
@@ -38,6 +38,13 @@ libsoup_dep = dependency('libsoup-3.0', version: '>= 3.0')
 gthread_dep = dependency('gthread-2.0', version: glib_version_str)
 
 trg_deps = [gtk_dep, glib_dep, gio_dep, json_dep, libsoup_dep, gthread_dep]
+
+# blueprint compiler (required, but not packaged in a lot of places
+blp_compiler = find_program('blueprint-compiler', required: false)
+if not blp_compiler.found()
+  subproject('blueprint-compiler')
+  blp_compiler = find_program('blueprint-compiler', required: true)
+endif
 
 # compiler
 cc = meson.get_compiler('c')
@@ -87,7 +94,9 @@ flags = [
   '-Werror=pointer-arith',
   '-Werror=init-self',
   '-Werror=missing-include-dirs',
-  '-Werror=date-time'
+  '-Werror=date-time',
+  '-Wno-deprecated',
+  '-Wno-deprecated-declarations'
 ]
 
 cflags = cc.get_supported_arguments(flags)

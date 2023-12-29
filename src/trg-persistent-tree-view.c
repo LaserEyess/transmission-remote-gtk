@@ -336,30 +336,30 @@ static GObject *trg_persistent_tree_view_constructor(GType type, guint n_constru
                  ->constructor(type, n_construct_properties, construct_params);
     TrgPersistentTreeView *ptv = TRG_PERSISTENT_TREE_VIEW(object);
 
-    hbox = trg_hbox_new(FALSE, 0);
+    hbox = trg_hbox_new(FALSE, 4);
 
     w = gtk_button_new_with_label(_("Add"));
     g_signal_connect(w, "clicked", G_CALLBACK(trg_persistent_tree_view_add_cb), object);
-    gtk_box_pack_start(GTK_BOX(hbox), w, FALSE, FALSE, 4);
+    gtk_box_append(GTK_BOX(hbox), w);
 
     w = ptv->delButton = gtk_button_new_with_label(_("Delete"));
     gtk_widget_set_sensitive(w, FALSE);
     g_signal_connect(w, "clicked", G_CALLBACK(trg_persistent_tree_view_del_cb), object);
-    gtk_box_pack_start(GTK_BOX(hbox), w, FALSE, FALSE, 4);
+    gtk_box_append(GTK_BOX(hbox), w);
 
     w = ptv->upButton = gtk_button_new_with_label(_("Up"));
     gtk_widget_set_sensitive(w, FALSE);
     g_signal_connect(w, "clicked", G_CALLBACK(trg_persistent_tree_view_up_cb), object);
-    gtk_box_pack_start(GTK_BOX(hbox), w, FALSE, FALSE, 4);
+    gtk_box_append(GTK_BOX(hbox), w);
 
     w = ptv->downButton = gtk_button_new_with_label(_("Down"));
     gtk_widget_set_sensitive(w, FALSE);
     g_signal_connect(w, "clicked", G_CALLBACK(trg_persistent_tree_view_down_cb), object);
-    gtk_box_pack_start(GTK_BOX(hbox), w, FALSE, FALSE, 4);
+    gtk_box_append(GTK_BOX(hbox), w);
 
     ptv->tv = trg_persistent_tree_view_tree_view_new(TRG_PERSISTENT_TREE_VIEW(object), ptv->model);
-    gtk_box_pack_start(GTK_BOX(object), my_scrolledwin_new(GTK_WIDGET(ptv->tv)), TRUE, TRUE, 4);
-    gtk_box_pack_start(GTK_BOX(object), hbox, FALSE, FALSE, 4);
+    gtk_box_append(GTK_BOX(object), my_scrolledwin_new(GTK_WIDGET(ptv->tv)));
+    gtk_box_append(GTK_BOX(object), hbox);
 
     ptv->wd = trg_pref_widget_desc_new(GTK_WIDGET(ptv->tv), ptv->key, ptv->conf_flags);
     ptv->wd->widget = GTK_WIDGET(object);

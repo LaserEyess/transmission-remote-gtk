@@ -1,7 +1,6 @@
 src_files = files(
   'bencode.c',
   'hig.c',
-  'icons.c',
   'json.c',
   'main.c',
   'requests.c',
@@ -12,7 +11,6 @@ src_files = files(
   'trg-cell-renderer-counter.c',
   'trg-cell-renderer-epoch.c',
   'trg-cell-renderer-eta.c',
-  'trg-cell-renderer-file-icon.c',
   'trg-cell-renderer-numgteqthan.c',
   'trg-cell-renderer-priority.c',
   'trg-cell-renderer-ratio.c',
@@ -32,7 +30,6 @@ src_files = files(
   'trg-gtk-app.c',
   'trg-json-widgets.c',
   'trg-main-window.c',
-  'trg-menu-bar.c',
   'trg-model.c',
   'trg-peers-model.c',
   'trg-peers-tree-view.c',
@@ -64,7 +61,7 @@ configure_file(output: 'config.h', configuration: conf_data)
 # Add gresources
 src_files += gresources
 
-executable(project_name, 
+executable(project_name,
   sources: src_files,
   dependencies: trg_deps,
   install: true,
